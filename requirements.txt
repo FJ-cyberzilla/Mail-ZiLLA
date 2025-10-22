@@ -63,3 +63,18 @@ bandit==1.7.5
 gunicorn==21.2.0
 sentry-sdk==1.40.0
 kombu==5.3.4
+# System Detection
+psutil==5.9.6
+
+# Proxy Management
+aiohttp==3.9.1
+aiofiles==23.2.1
+
+# Smart Installation
+questionary==2.0.1
+pyfiglet==0.8.post1
+rich==13.7.0
+
+# Platform-specific (auto-handled)
+# Windows: pip install windows-curses (if needed)
+# Termux: pkg install python redis postgresql
