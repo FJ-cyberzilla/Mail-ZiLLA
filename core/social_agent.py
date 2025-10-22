@@ -1,8 +1,480 @@
-"""
-SOCIAL AGENT CORE - Enterprise Intelligence Engine v4.0
-Advanced Browser Fingerprinting & System Intelligence Integration
-"""
 
+class SocialAgent:
+    """
+    ENTERPRISE SOCIAL INTELLIGENCE AGENT v3.0
+    Complete coverage for 25+ platforms including professional, messaging, and specialized networks
+    """
+    
+    def __init__(self):
+        self.settings = get_settings()
+        self.logger = logging.getLogger("social_agent")
+        
+        # Initialize core components
+        self.proxy_manager = ProxyManager()
+        self.email_validator = EmailValidator()
+        self.fuzzy_matcher = FuzzyMatcher()
+        self.image_analyzer = ImageAnalyzer()
+        self.strategy_router = StrategyRouter()
+        self.activity_scorer = ActivityScorer()
+        self.feedback_engine = FeedbackEngine()
+        
+        # Complete agent registry
+        self.platform_agents = {}
+        self.platform_categories = {}
+        self._init_complete_agents()
+        
+        # Search state
+        self.active_searches = {}
+        self.rate_limit_tracker = {}
+        
+        self.logger.info("🤖 Social Agent Core v3.0 initialized with 25+ platform agents")
+    
+    def _init_complete_agents(self):
+        """Dynamically load complete platform coverage"""
+        try:
+            # PROFESSIONAL NETWORKS
+            from agents.linkedin_agent import LinkedInAgent
+            from agents.xing_agent import XingAgent
+            from agents.angellist_agent import AngelListAgent
+            from agents.glassdoor_agent import GlassdoorAgent
+            
+            # ENTERPRISE COMMUNICATION
+            from agents.microsoft_teams_agent import MicrosoftTeamsAgent
+            from agents.skype_agent import SkypeAgent
+            from agents.slack_agent import SlackAgent
+            from agents.google_chat_agent import GoogleChatAgent
+            from agents.discord_agent import DiscordAgent
+            
+            # SOCIAL MEDIA (MAINSTREAM)
+            from agents.facebook_agent import FacebookAgent
+            from agents.instagram_agent import InstagramAgent
+            from agents.twitter_agent import TwitterAgent
+            from agents.tiktok_agent import TikTokAgent
+            from agents.pinterest_agent import PinterestAgent
+            from agents.reddit_agent import RedditAgent
+            from agents.twitch_agent import TwitchAgent
+            
+            # SECURE MESSAGING
+            from agents.telegram_agent import TelegramAgent
+            from agents.whatsapp_agent import WhatsAppAgent
+            from agents.signal_agent import SignalAgent
+            from agents.wire_agent import WireAgent
+            from agents.element_agent import ElementAgent
+            from agents.threema_agent import ThreemaAgent
+            
+            # CODE & DEVELOPMENT
+            from agents.github_agent import GitHubAgent
+            from agents.gitlab_agent import GitLabAgent
+            from agents.stackoverflow_agent import StackOverflowAgent
+            from agents.bitbucket_agent import BitbucketAgent
+            
+            # EMERGING PLATFORMS
+            from agents.bluesky_agent import BlueskyAgent
+            from agents.threads_agent import ThreadsAgent
+            from agents.mastodon_agent import MastodonAgent
+            
+            # SPECIALIZED PLATFORMS
+            from agents.onlyfans_agent import OnlyFansAgent
+            from agents.tumblr_agent import TumblrAgent
+            from agents.flickr_agent import FlickrAgent
+            from agents.fetlife_agent import FetLifeAgent
+            
+            # ADDITIONAL PLATFORMS
+            from agents.plurk_agent import PlurkAgent
+            from agents.vk_agent import VKAgent
+            from agents.wechat_agent import WeChatAgent
+            
+            # ===== PROFESSIONAL NETWORKS =====
+            self.platform_agents.update({
+                'linkedin': LinkedInAgent(),
+                'xing': XingAgent(),
+                'angellist': AngelListAgent(),
+                'glassdoor': GlassdoorAgent(),
+            })
+            
+            # ===== ENTERPRISE COMMUNICATION =====
+            self.platform_agents.update({
+                'microsoft_teams': MicrosoftTeamsAgent(),
+                'skype': SkypeAgent(),
+                'slack': SlackAgent(),
+                'google_chat': GoogleChatAgent(),
+                'discord': DiscordAgent(),
+            })
+            
+            # ===== SOCIAL MEDIA (MAINSTREAM) =====
+            self.platform_agents.update({
+                'facebook': FacebookAgent(),
+                'instagram': InstagramAgent(),
+                'twitter': TwitterAgent(),
+                'tiktok': TikTokAgent(),
+                'pinterest': PinterestAgent(),
+                'reddit': RedditAgent(),
+                'twitch': TwitchAgent(),
+            })
+            
+            # ===== SECURE MESSAGING =====
+            self.platform_agents.update({
+                'telegram': TelegramAgent(),
+                'whatsapp': WhatsAppAgent(),
+                'signal': SignalAgent(),
+                'wire': WireAgent(),
+                'element': ElementAgent(),
+                'threema': ThreemaAgent(),
+            })
+            
+            # ===== CODE & DEVELOPMENT =====
+            self.platform_agents.update({
+                'github': GitHubAgent(),
+                'gitlab': GitLabAgent(),
+                'stackoverflow': StackOverflowAgent(),
+                'bitbucket': BitbucketAgent(),
+            })
+            
+            # ===== EMERGING PLATFORMS =====
+            self.platform_agents.update({
+                'bluesky': BlueskyAgent(),
+                'threads': ThreadsAgent(),
+                'mastodon': MastodonAgent(),
+            })
+            
+            # ===== SPECIALIZED PLATFORMS =====
+            self.platform_agents.update({
+                'onlyfans': OnlyFansAgent(),
+                'tumblr': TumblrAgent(),
+                'flickr': FlickrAgent(),
+                'fetlife': FetLifeAgent(),
+                'plurk': PlurkAgent(),
+                'vk': VKAgent(),
+                'wechat': WeChatAgent(),
+            })
+            
+            # ===== ENHANCED CATEGORY DEFINITIONS =====
+            self.platform_categories = {
+                PlatformCategory.PROFESSIONAL: [
+                    'linkedin', 'xing', 'angellist', 'glassdoor'
+                ],
+                PlatformCategory.ENTERPRISE_COMMS: [
+                    'microsoft_teams', 'skype', 'slack', 'google_chat', 'discord'
+                ],
+                PlatformCategory.SOCIAL_MEDIA: [
+                    'facebook', 'instagram', 'twitter', 'tiktok', 
+                    'pinterest', 'reddit', 'twitch'
+                ],
+                PlatformCategory.SECURE_MESSAGING: [
+                    'telegram', 'whatsapp', 'signal', 'wire', 
+                    'element', 'threema'
+                ],
+                PlatformCategory.CODE: [
+                    'github', 'gitlab', 'stackoverflow', 'bitbucket'
+                ],
+                PlatformCategory.EMERGING: [
+                    'bluesky', 'threads', 'mastodon'
+                ],
+                PlatformCategory.SPECIALIZED: [
+                    'onlyfans', 'tumblr', 'flickr', 'fetlife', 
+                    'plurk', 'vk', 'wechat'
+                ]
+            }
+            
+            self.logger.info(f"✅ Loaded {len(self.platform_agents)} platform agents across {len(self.platform_categories)} categories")
+            
+        except ImportError as e:
+            self.logger.warning(f"⚠️ Some agents not available: {e}")
+            self._create_complete_stub_agents()
+    
+    def _create_complete_stub_agents(self):
+        """Create stub agents for all platforms"""
+        from .base_agent import BaseAgent
+        
+        class StubAgent(BaseAgent):
+            def __init__(self, platform: str, category: PlatformCategory):
+                super().__init__()
+                self.platform = platform
+                self.category = category
+            
+            async def search_by_email(self, email: str, context: Dict = None) -> List[ProfileData]:
+                self.logger.info(f"Stub agent {self.platform} searching for {email}")
+                return []
+            
+            async def search_by_phone(self, phone: str, context: Dict = None) -> List[ProfileData]:
+                self.logger.info(f"Stub agent {self.platform} searching for phone: {phone}")
+                return []
+        
+        # Complete platform list
+        all_platforms = {
+            # Professional
+            'linkedin': PlatformCategory.PROFESSIONAL,
+            'xing': PlatformCategory.PROFESSIONAL,
+            'angellist': PlatformCategory.PROFESSIONAL,
+            'glassdoor': PlatformCategory.PROFESSIONAL,
+            
+            # Enterprise Communication
+            'microsoft_teams': PlatformCategory.ENTERPRISE_COMMS,
+            'skype': PlatformCategory.ENTERPRISE_COMMS,
+            'slack': PlatformCategory.ENTERPRISE_COMMS,
+            'google_chat': PlatformCategory.ENTERPRISE_COMMS,
+            'discord': PlatformCategory.ENTERPRISE_COMMS,
+            
+            # Social Media
+            'facebook': PlatformCategory.SOCIAL_MEDIA,
+            'instagram': PlatformCategory.SOCIAL_MEDIA,
+            'twitter': PlatformCategory.SOCIAL_MEDIA,
+            'tiktok': PlatformCategory.SOCIAL_MEDIA,
+            'pinterest': PlatformCategory.SOCIAL_MEDIA,
+            'reddit': PlatformCategory.SOCIAL_MEDIA,
+            'twitch': PlatformCategory.SOCIAL_MEDIA,
+            
+            # Secure Messaging
+            'telegram': PlatformCategory.SECURE_MESSAGING,
+            'whatsapp': PlatformCategory.SECURE_MESSAGING,
+            'signal': PlatformCategory.SECURE_MESSAGING,
+            'wire': PlatformCategory.SECURE_MESSAGING,
+            'element': PlatformCategory.SECURE_MESSAGING,
+            'threema': PlatformCategory.SECURE_MESSAGING,
+            
+            # Code & Development
+            'github': PlatformCategory.CODE,
+            'gitlab': PlatformCategory.CODE,
+            'stackoverflow': PlatformCategory.CODE,
+            'bitbucket': PlatformCategory.CODE,
+            
+            # Emerging
+            'bluesky': PlatformCategory.EMERGING,
+            'threads': PlatformCategory.EMERGING,
+            'mastodon': PlatformCategory.EMERGING,
+            
+            # Specialized
+            'onlyfans': PlatformCategory.SPECIALIZED,
+            'tumblr': PlatformCategory.SPECIALIZED,
+            'flickr': PlatformCategory.SPECIALIZED,
+            'fetlife': PlatformCategory.SPECIALIZED,
+            'plurk': PlatformCategory.SPECIALIZED,
+            'vk': PlatformCategory.SPECIALIZED,
+            'wechat': PlatformCategory.SPECIALIZED,
+        }
+        
+        for platform, category in all_platforms.items():
+            self.platform_agents[platform] = StubAgent(platform, category)
+
+    async def _execute_enterprise_comms_search(self, email: str, user_context: Dict) -> Dict[str, List[ProfileData]]:
+        """
+        Specialized search for enterprise communication platforms
+        """
+        enterprise_platforms = self.platform_categories[PlatformCategory.ENTERPRISE_COMMS]
+        platform_results = {}
+        
+        self.logger.info("🏢 Searching enterprise communication platforms...")
+        
+        search_tasks = []
+        for platform in enterprise_platforms:
+            if platform in self.platform_agents:
+                task = self._search_platform_with_proxy(
+                    platform, email, {}, user_context
+                )
+                search_tasks.append(task)
+        
+        results = await asyncio.gather(*search_tasks, return_exceptions=True)
+        
+        for platform, result in zip(enterprise_platforms, results):
+            if not isinstance(result, Exception) and result is not None:
+                platform_results[platform] = result
+        
+        return platform_results
+
+    async def _execute_secure_messaging_search(self, identifier: str, is_phone: bool, user_context: Dict) -> Dict[str, List[ProfileData]]:
+        """
+        Specialized search for secure messaging platforms
+        """
+        secure_platforms = self.platform_categories[PlatformCategory.SECURE_MESSAGING]
+        platform_results = {}
+        
+        self.logger.info("🔒 Searching secure messaging platforms...")
+        
+        search_tasks = []
+        for platform in secure_platforms:
+            if platform in self.platform_agents:
+                agent = self.platform_agents[platform]
+                
+                if is_phone and hasattr(agent, 'search_by_phone'):
+                    task = self._search_messaging_platform_with_proxy(
+                        platform, identifier, user_context
+                    )
+                else:
+                    task = self._search_platform_with_proxy(
+                        platform, identifier, {}, user_context
+                    )
+                search_tasks.append(task)
+        
+        results = await asyncio.gather(*search_tasks, return_exceptions=True)
+        
+        for platform, result in zip(secure_platforms, results):
+            if not isinstance(result, Exception) and result is not None:
+                platform_results[platform] = result
+        
+        return platform_results
+
+    async def _execute_specialized_platform_search(self, email: str, user_context: Dict) -> Dict[str, List[ProfileData]]:
+        """
+        Search specialized platforms including NSFW websites
+        Uses enhanced privacy and security measures
+        """
+        specialized_platforms = self.platform_categories[PlatformCategory.SPECIALIZED]
+        platform_results = {}
+        
+        self.logger.info("🎭 Searching specialized platforms...")
+        
+        # Enhanced proxy rotation for sensitive platforms
+        sensitive_platforms = ['onlyfans', 'fetlife']
+        
+        search_tasks = []
+        for platform in specialized_platforms:
+            if platform in self.platform_agents:
+                # Use residential proxies for sensitive platforms
+                proxy_type = 'residential' if platform in sensitive_platforms else 'standard'
+                
+                task = self._search_specialized_platform(
+                    platform, email, user_context, proxy_type
+                )
+                search_tasks.append(task)
+        
+        results = await asyncio.gather(*search_tasks, return_exceptions=True)
+        
+        for platform, result in zip(specialized_platforms, results):
+            if not isinstance(result, Exception) and result is not None:
+                platform_results[platform] = result
+        
+        return platform_results
+
+    async def _search_specialized_platform(self, platform: str, email: str, 
+                                         user_context: Dict, proxy_type: str) -> List[ProfileData]:
+        """Execute specialized platform search with enhanced privacy"""
+        agent = self.platform_agents[platform]
+        max_retries = self.settings.agents.MAX_RETRIES
+        
+        for attempt in range(max_retries):
+            try:
+                # Get specialized proxy based on platform sensitivity
+                proxy = self.proxy_manager.get_proxy(proxy_type=proxy_type)
+                if proxy:
+                    agent.set_proxy(proxy)
+                
+                # Platform-specific timeout
+                timeout = getattr(self.settings.agents, f"{platform.upper()}_TIMEOUT", 45)
+                
+                results = await asyncio.wait_for(
+                    agent.search_by_email(email, {}, user_context),
+                    timeout=timeout
+                )
+                
+                self.logger.info(f"✅ {platform} found {len(results)} profiles")
+                return results
+                
+            except asyncio.TimeoutError:
+                self.logger.warning(f"⏰ {platform} search timeout (attempt {attempt + 1})")
+            except Exception as e:
+                self.logger.warning(f"⚠️ {platform} search error (attempt {attempt + 1}): {e}")
+            
+            if attempt < max_retries - 1:
+                await asyncio.sleep(2 ** attempt)
+        
+        return []
+
+    async def _calculate_platform_specific_confidence(self, profile: ProfileData) -> float:
+        """Calculate confidence score with platform-specific weighting"""
+        # Platform reliability weights (enterprise-tuned)
+        platform_weights = {
+            # Professional - Highest confidence
+            'linkedin': 0.95,
+            'xing': 0.90,
+            'glassdoor': 0.85,
+            
+            # Enterprise Communication - High confidence
+            'microsoft_teams': 0.88,
+            'slack': 0.86,
+            'google_chat': 0.84,
+            
+            # Social Media - Medium confidence
+            'facebook': 0.82,
+            'instagram': 0.80,
+            'twitter': 0.78,
+            'reddit': 0.76,
+            
+            # Secure Messaging - Variable confidence
+            'telegram': 0.75,
+            'whatsapp': 0.72,
+            'signal': 0.70,
+            'wire': 0.68,
+            
+            # Code Platforms - High confidence
+            'github': 0.88,
+            'gitlab': 0.85,
+            'stackoverflow': 0.83,
+            
+            # Specialized - Lower confidence but valuable
+            'onlyfans': 0.65,
+            'fetlife': 0.60,
+            'tumblr': 0.70,
+        }
+        
+        base_weight = platform_weights.get(profile.platform, 0.65)
+        
+        # Enhanced confidence factors
+        confidence_factors = []
+        confidence_factors.append(base_weight)  # Platform reliability
+        
+        # Data completeness
+        completeness_score = self._calculate_enhanced_data_completeness(profile)
+        confidence_factors.append(completeness_score * 0.8)
+        
+        # Activity recency
+        if profile.last_activity:
+            recency_score = self._calculate_activity_recency(profile.last_activity)
+            confidence_factors.append(recency_score * 0.7)
+        
+        # Verification status
+        if profile.is_verified:
+            confidence_factors.append(0.8)
+        
+        # Profile picture quality
+        if profile.profile_picture:
+            picture_score = await self._assess_profile_picture_quality(profile.profile_picture)
+            confidence_factors.append(picture_score * 0.6)
+        
+        # Platform-specific boosts
+        platform_boost = self._get_platform_specific_boost(profile)
+        confidence_factors.append(platform_boost)
+        
+        return sum(confidence_factors) / len(confidence_factors)
+
+    def _calculate_enhanced_data_completeness(self, profile: ProfileData) -> float:
+        """Enhanced data completeness calculation"""
+        fields = [
+            profile.full_name, profile.email, profile.phone,
+            profile.location, profile.company, profile.job_title,
+            profile.bio, profile.profile_picture
+        ]
+        
+        filled_fields = sum(1 for field in fields if field)
+        base_score = filled_fields / len(fields)
+        
+        # Boost for professional platforms with complete data
+        if profile.platform_category == PlatformCategory.PROFESSIONAL:
+            if profile.full_name and profile.company:
+                base_score += 0.2
+        
+        return min(1.0, base_score)
+
+    async def _assess_profile_picture_quality(self, picture_url: str) -> float:
+        """Assess profile picture quality and authenticity"""
+        try:
+            # Check if image is accessible
+            async with aiohttp.ClientSession() as session:
+                async with session.get(picture_url, timeout=10) as response:
+                    if response.status != 200:
+                        return 0.3
+            
+            # Basic quality assessment (in practice, use image analysis)
+            # 
 import asyncio
 import time
 import hashlib
