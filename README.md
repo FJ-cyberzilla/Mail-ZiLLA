@@ -202,7 +202,7 @@ Developed with ✨ by CyberZilla Systems
 
 </div>
 
-[![View Full Wiki](https://img.shields.io/badge/View_Complete_Wiki-Detailed-blue?style=for-the-badge&logo=book)](WIKI.md)
+[![View Full Wiki](https://github.com/FJ-cyberzilla/Mail-ZiLLA/wiki)
 [![Schedule Demo](https://img.shields.io/badge/Schedule_Demo-Personalized-green?style=for-the-badge&logo=calendar)](https://calendly.com/mail-zilla/demo)
 [![Contact Sales](https://img.shields.io/badge/Contact_Sales-Enterprise-purple?style=for-the-badge&logo=chat)](mailto:sales@cyberzilla.systems)
 ---
