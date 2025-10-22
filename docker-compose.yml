@@ -1,5 +1,109 @@
-# Updated docker-compose.yml with resource management
+version: '3.8'
 
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: cyberzilla_enterprise
+      POSTGRES_USER: cyberzilla
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-Cyberzilla123!}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cyberzilla -d cyberzilla_enterprise"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Broker
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-RedisCyberzilla123!}
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # Main API Service
+  api:
+    build: .
+    command: uvicorn api.main:app --host 0.0.0.0 --port 8000 --workers 4
+    environment:
+      - DATABASE_URL=postgresql://cyberzilla:${DB_PASSWORD:-Cyberzilla123!}@postgres:5432/cyberzilla_enterprise
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-RedisCyberzilla123!}@redis:6379/0
+      - ENVIRONMENT=production
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Celery Worker
+  worker:
+    build: .
+    command: celery -A tasks.worker_tasks worker --loglevel=info --concurrency=4 -Q social_lookup,default
+    environment:
+      - DATABASE_URL=postgresql://cyberzilla:${DB_PASSWORD:-Cyberzilla123!}@postgres:5432/cyberzilla_enterprise
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-RedisCyberzilla123!}@redis:6379/0
+      - ENVIRONMENT=production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    deploy:
+      replicas: 2
+
+  # Celery Beat Scheduler
+  scheduler:
+    build: .
+    command: celery -A tasks.worker_tasks beat --loglevel=info
+    environment:
+      - DATABASE_URL=postgresql://cyberzilla:${DB_PASSWORD:-Cyberzilla123!}@postgres:5432/cyberzilla_enterprise
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-RedisCyberzilla123!}@redis:6379/0
+      - ENVIRONMENT=production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # Flower Monitoring
+  flower:
+    build: .
+    command: celery -A tasks.worker_tasks flower --port=5555
+    environment:
+      - DATABASE_URL=postgresql://cyberzilla:${DB_PASSWORD:-Cyberzilla123!}@postgres:5432/cyberzilla_enterprise
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-RedisCyberzilla123!}@redis:6379/0
+    ports:
+      - "5555:5555"
+    depends_on:
+      - worker
+      - scheduler
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  default:
+    name: cyberzilla_network
 services:
   worker:
     build: .
