@@ -1,0 +1,26 @@
+/* Custom Swagger UI styles for Cyberzilla */
+.swagger-ui .topbar {
+    background-color: #1a365d;
+}
+
+.swagger-ui .topbar .download-url-wrapper {
+    display: none;
+}
+
+.swagger-ui .info .title {
+    color: #2d3748;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.swagger-ui .btn.authorize {
+    background-color: #2b6cb0;
+    border-color: #2b6cb0;
+}
+
+.cyberzilla-brand {
+    text-align: center;
+    padding: 20px;
+    background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%);
+    color: white;
+    margin-bottom: 20px;
+}
