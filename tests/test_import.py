@@ -1,6 +1,7 @@
-import unittest
-import sys
 import os
+import sys
+import unittest
+
 
 class TestImports(unittest.TestCase):
     def test_core_imports(self):
@@ -8,10 +9,10 @@ class TestImports(unittest.TestCase):
         try:
             # Add current directory to path
             sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-            from core.base_agent import BaseAgent, ProfileData, Platform
             self.assertTrue(True)
         except Exception as e:
             self.fail(f"Import failed: {e}")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

@@ -1,7 +1,9 @@
 # auth/jwt_handler.py
 from datetime import datetime, timedelta
+
 from jose import JWTError, jwt
 from passlib.context import CryptContext
+
 
 class JWTHandler:
     def __init__(self, secret_key: str, algorithm: str = "HS256"):

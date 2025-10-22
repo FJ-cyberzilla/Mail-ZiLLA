@@ -6,27 +6,28 @@ Displays the farewell message with animations
 
 import os
 import time
-import sys
 from pathlib import Path
+
 
 def animated_display(file_path):
     """Display farewell file with animation"""
     if not os.path.exists(file_path):
         print("Farewell file not found!")
         return
-    
-    with open(file_path, 'r') as f:
+
+    with open(file_path, "r") as f:
         content = f.read()
-    
+
     # Clear screen
-    os.system('cls' if os.name == 'nt' else 'clear')
-    
+    os.system("cls" if os.name == "nt" else "clear")
+
     # Typewriter effect
     for char in content:
-        print(char, end='', flush=True)
+        print(char, end="", flush=True)
         time.sleep(0.01)
-    
+
     print("\n\n")
+
 
 if __name__ == "__main__":
     farewell_file = Path.home() / "cyberzilla_farewell.txt"

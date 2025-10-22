@@ -13,7 +13,7 @@ class CircuitBreaker:
                 self.state = "HALF_OPEN"
             else:
                 raise CircuitBreakerOpenException("Circuit breaker is OPEN")
-        
+
         try:
             result = await func(*args, **kwargs)
             self._on_success()

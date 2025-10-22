@@ -4,26 +4,25 @@ Expanded Platform Coverage: 15+ Social Networks & Messaging Apps
 """
 
 import asyncio
-import time
-from typing import Dict, List, Optional, Any, Tuple
-from datetime import datetime, timedelta
-import logging
-from dataclasses import dataclass
-from enum import Enum
 import json
+import logging
+import time
+from dataclasses import dataclass
+from datetime import datetime, timedelta
+from enum import Enum
+from typing import Any, Dict, List, Optional, Tuple
 
+from .activity_scorer import ActivityScorer
 from .config import get_settings
-from .proxy_manager import ProxyManager
-from .validation import EmailValidator
+from .exceptions import (AgentError, ProxyError, RateLimitExceeded,
+                         SecurityViolation, ValidationError)
+from .feedback_engine import FeedbackEngine
 from .fuzzy_matcher import FuzzyMatcher
 from .image_analyzer import ImageAnalyzer
+from .proxy_manager import ProxyManager
 from .strategy_router import StrategyRouter
-from .activity_scorer import ActivityScorer
-from .feedback_engine import FeedbackEngine
-from .exceptions import (
-    AgentError, ProxyError, ValidationError, 
-    RateLimitExceeded, SecurityViolation
-)
+from .validation import EmailValidator
+
 
 class SearchStatus(Enum):
     """Search status enumeration"""
@@ -132,40 +131,35 @@ class SocialAgent:
         """Dynamically load expanded platform-specific agents"""
         try:
             # Professional Networks
-            from agents.linkedin_agent import LinkedInAgent
-            from agents.xing_agent import XingAgent
             from agents.angellist_agent import AngelListAgent
-            
+            # Emerging Platforms
+            from agents.bluesky_agent import BlueskyAgent
+            from agents.discord_agent import DiscordAgent
             # Social Media
             from agents.facebook_agent import FacebookAgent
-            from agents.instagram_agent import InstagramAgent
-            from agents.twitter_agent import TwitterAgent
-            from agents.tiktok_agent import TikTokAgent
-            from agents.pinterest_agent import PinterestAgent
-            from agents.reddit_agent import RedditAgent
-            
-            # Messaging Apps (enhanced)
-            from agents.telegram_agent import TelegramAgent
-            from agents.whatsapp_agent import WhatsAppAgent
-            from agents.signal_agent import SignalAgent
-            from agents.discord_agent import DiscordAgent
-            from agents.slack_agent import SlackAgent
-            
+            from agents.flickr_agent import FlickrAgent
             # Code & Development
             from agents.github_agent import GitHubAgent
             from agents.gitlab_agent import GitLabAgent
-            from agents.stackoverflow_agent import StackOverflowAgent
-            
-            # Emerging Platforms
-            from agents.bluesky_agent import BlueskyAgent
-            from agents.threads_agent import ThreadsAgent
+            from agents.instagram_agent import InstagramAgent
+            from agents.linkedin_agent import LinkedInAgent
             from agents.mastodon_agent import MastodonAgent
-            
             # Specialized Platforms
             from agents.onlyfans_agent import OnlyFansAgent
+            from agents.pinterest_agent import PinterestAgent
+            from agents.reddit_agent import RedditAgent
+            from agents.signal_agent import SignalAgent
+            from agents.slack_agent import SlackAgent
+            from agents.stackoverflow_agent import StackOverflowAgent
+            # Messaging Apps (enhanced)
+            from agents.telegram_agent import TelegramAgent
+            from agents.threads_agent import ThreadsAgent
+            from agents.tiktok_agent import TikTokAgent
             from agents.tumblr_agent import TumblrAgent
-            from agents.flickr_agent import FlickrAgent
-            
+            from agents.twitter_agent import TwitterAgent
+            from agents.whatsapp_agent import WhatsAppAgent
+            from agents.xing_agent import XingAgent
+
             # Professional Agents
             self.platform_agents.update({
                 'linkedin': LinkedInAgent(),
@@ -392,6 +386,7 @@ class SocialAgent:
     def _validate_phone_format(self, phone: str) -> bool:
         """Validate international phone number format"""
         import re
+
         # Basic international format validation
         pattern = r'^\+?[1-9]\d{1,14}$'
         return bool(re.match(pattern, phone.replace(' ', '').replace('-', '')))

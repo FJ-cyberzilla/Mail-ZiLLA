@@ -1,9 +1,9 @@
 # core/base_agent.py
+import logging
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
 from enum import Enum
-import logging
+from typing import Any, Dict, List, Optional
 
 
 class Platform(Enum):
@@ -32,27 +32,33 @@ class ProfileData:
 
 class BaseAgent(ABC):
     """Abstract base class for all platform agents"""
-    
+
     def __init__(self, platform: Platform):
         self.platform = platform
         self.logger = logging.getLogger(f"{platform.value}_agent")
 
     @abstractmethod
-    async def search_by_email(self, email: str, context: Dict = None) -> List[ProfileData]:
+    async def search_by_email(
+        self, email: str, context: Dict = None
+    ) -> List[ProfileData]:
         """Search platform by email address"""
         pass
-    
-    @abstractmethod  
-    async def search_by_phone(self, phone: str, context: Dict = None) -> List[ProfileData]:
+
+    @abstractmethod
+    async def search_by_phone(
+        self, phone: str, context: Dict = None
+    ) -> List[ProfileData]:
         """Search platform by phone number"""
         pass
 
 
 class BaseSocialAgent(BaseAgent):
     """Base class for social media platforms"""
+
     pass
 
 
 class BaseCodeAgent(BaseAgent):
     """Base class for code/platform platforms"""
+
     pass
