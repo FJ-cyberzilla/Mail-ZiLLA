@@ -22,16 +22,16 @@ jobs:
       run: |
         mkdir -p core
         cat > core/base_agent.py << 'EOF'
-from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass
-from enum import Enum
+from abc import: ABC, abstractmethod
+from typing import: Dict, List, Optional, Any
+from dataclasses import: dataclass
+from enum import: Enum
 
 class Platform(Enum):
     LINKEDIN = "linkedin"
     GITHUB = "github"
 
-@dataclass
+dataclass:
 class ProfileData:
     platform: Platform
     profile_url: str
@@ -42,19 +42,15 @@ class ProfileData:
     raw_data: Dict[str, Any] = None
 
 class BaseAgent(ABC):
-    def __init__(self, platform: Platform):
-        self.platform = platform
-
-    @abstractmethod
-    async def search_by_email(self, email: str, context: Dict) -> List[ProfileData]:
-        pass
+    def __init__(self, platform:
+    Platform): self.platform = platform @abstractmethod
+    async def search_by_email(self, email: str, 
+    context: Dict) ->  List[ProfileData]:pass
 
 class BaseSocialAgent(BaseAgent):
     pass
-EOF
-    
-    - name: Install dependencies
-      run: |
+    run:
+    Install dependencies
         python -m pip install --upgrade pip
         pip install pytest
     
@@ -73,8 +69,7 @@ class TestBasic(unittest.TestCase):
     def test_basic(self):
         self.assertEqual(1+1, 2)
 if __name__ == '__main__':
-    unittest.main()
-"
+    unittest.main()"
     
     - name: Run pytest
       run: |
