@@ -1,4 +1,12 @@
 # tests/test_social_agent.py
+class TestSocialAgent(unittest.TestCase):
+    def test_email_lookup_accuracy(self):
+        # Missing: Comprehensive test cases
+        pass
+    
+    def test_proxy_rotation(self):
+        # Missing: Proxy management tests
+        pass
 import pytest
 from core.social_agent import social_agent
 
