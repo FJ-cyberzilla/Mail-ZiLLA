@@ -1,10 +1,46 @@
-"""
-BASE AGENT FRAMEWORK - Foundation for all platform agents
-Enterprise-grade agent architecture with performance tracking and error handling
-"""
-"""
-BASE AGENT FRAMEWORK - Foundation for all platform agents
-"""
+# base_agent.py
+from abc import ABC, abstractmethod
+from typing import Dict, List, Optional, Any
+from dataclasses import dataclass
+from enum import Enum
+import asyncio
+import logging
+
+class Platform(Enum):
+    LINKEDIN = "linkedin"
+    GITHUB = "github"
+    TWITTER = "twitter"
+    FACEBOOK = "facebook"
+    INSTAGRAM = "instagram"
+    TELEGRAM = "telegram"
+    WHATSAPP = "whatsapp"
+
+@dataclass
+class ProfileData:
+    platform: Platform
+    profile_url: str
+    username: Optional[str]
+    full_name: Optional[str]
+    email: Optional[str]
+    phone: Optional[str]
+    location: Optional[str]
+    bio: Optional[str]
+    avatar_url: Optional[str]
+    last_activity: Optional[str]
+    confidence_score: float
+    raw_data: Dict[str, Any]
+
+class BaseAgent(ABC):
+    def __init__(self, platform: Platform):
+        self.platform = platform
+        self.logger = logging.getLogger(f"{platform.value}_agent")
+        self.rate_limit_delay = 1.0  # seconds
+
+    @abstractmethod
+    async def search_by_email(self, email: str, context: Dict) -> List[ProfileData]:
+        pass
+        
+    @abstractmethod
 
 from abc import ABC, abstractmethod
 from typing import List, Dict, Optional, Any
