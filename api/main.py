@@ -2,7 +2,75 @@
 FASTAPI APPLICATION - Enterprise API Server
 Cyberzilla Enterprise Intelligence Platform v2.1.0
 """
+"""
+FASTAPI APPLICATION - Enterprise API Server
+"""
 
+from fastapi import FastAPI, Depends, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+import logging
+from contextlib import asynccontextmanager
+
+from .routes import router as api_router
+from core.config import get_settings
+from database.db import init_db, get_database
+from core.enterprise_trust import trust_manager
+
+# Lifespan management
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    logging.info("🚀 Starting Cyberzilla Enterprise API")
+    trust_manager.establish_enterprise_presence()
+    init_db()
+    yield
+    # Shutdown
+    logging.info("🛑 Shutting down Cyberzilla Enterprise API")
+
+# Create FastAPI app
+app = FastAPI(
+    title="Cyberzilla Enterprise Intelligence Platform",
+    description="Enterprise-grade social intelligence and digital footprint analysis",
+    version="2.1.0",
+    lifespan=lifespan,
+    docs_url="/docs",
+    redoc_url="/redoc"
+)
+
+# Security middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://cyberzilla.systems"],  # Production domain
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.add_middleware(
+    TrustedHostMiddleware, 
+    allowed_hosts=["cyberzilla.systems", "api.cyberzilla.systems"]
+)
+
+# Include routers
+app.include_router(api_router, prefix="/api/v1")
+
+# Health check endpoint
+@app.get("/health")
+async def health_check():
+    return {
+        "status": "healthy",
+        "version": "2.1.0",
+        "timestamp": datetime.now().isoformat()
+    }
+
+@app.get("/")
+async def root():
+    return {
+        "message": "Cyberzilla Enterprise Intelligence Platform",
+        "version": "2.1.0", 
+        "docs": "/docs"
+    }
 from fastapi import FastAPI, Depends, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
