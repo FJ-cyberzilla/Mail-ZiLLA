@@ -22,7 +22,6 @@ from .network_analyzer import NetworkAnalyzer
 from .hardware_profiler import HardwareProfiler
 from .behavioral_analyzer import BehavioralAnalyzer
 
-# ... [previous imports remain]
 
 @dataclass
 class DigitalFootprint:
@@ -452,6 +451,30 @@ class SocialAgent:
         }
         
         if digital_footprint:
+
+async def process_email_enterprise(self, email: str, user_context: Dict = None) -> Dict[str, Any]:
+    """
+    ENTERPRISE-GRADE PROCESSING with deception detection
+    """
+    # ... [previous processing]
+    
+    # STEP: Advanced Deception Detection
+    deception_analysis = await self.deception_detector.analyze_digital_identity(
+        final_result.profiles, digital_footprint, behavioral_analysis
+    )
+    
+    # Enhance confidence based on deception analysis
+    if deception_analysis.overall_risk_score > 0.7:
+        final_result.confidence_score *= 0.8  # Reduce confidence for high deception risk
+        final_result.risk_assessment['deception_detected'] = True
+        final_result.risk_assessment['deception_analysis'] = deception_analysis
+    
+    return {
+        'correlation_result': final_result,
+        'deception_analysis': deception_analysis,
+        'digital_footprint': digital_footprint,
+        'behavioral_analysis': behavioral_analysis
+    }
             # Analyze device characteristics
             system_intel['device_characteristics'] = {
                 'device_type': self._infer_device_type(digital_footprint.system_profile),
