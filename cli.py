@@ -1,5 +1,41 @@
-# In cli.py - Add legitimacy and resource management
+from database.db import db_manager, init_db
+from core.validation import email_validator
+from core.schemas import LookupRequest, TaskStatus
+from tasks.celery_config import app as celery_app
+from tasks.worker_tasks import social_lookup_task
 
+class CyberzillaCLI:
+
+    async def submit_lookup_task(self, email: str, advanced: bool = False):
+        """Submit email lookup task to Celery"""
+        
+        # Validate email first
+        validation_result = await email_validator.validate_email_comprehensive(email)
+        
+        if not validation_result['is_valid']:
+            console.print(f"[bold red]❌ Invalid email: {validation_result.get('details', {}).get('error', 'Unknown error')}[/bold red]")
+            return None
+        
+        if validation_result['risk_score'] > 0.7:
+            if not Confirm.ask(f"[bold yellow]⚠️  High-risk email detected (score: {validation_result['risk_score']:.2f}). Continue?[/bold yellow]"):
+                return None
+        
+        # Create lookup request
+        lookup_request = LookupRequest(
+            email=email,
+            advanced_analysis=advanced,
+            collect_fingerprint=True
+        )
+        
+        # Submit to Celery
+        task = social_lookup_task.delay(
+            email=email,
+            advanced_analysis=advanced,
+            user_context={'cli_user': self.current_user}
+        )
+        
+        console.print(f"[bold green]✅ Task submitted: {task.id}[/bold green]")
+        return task.id
 class CyberzillaCLI:
     def __init__(self):
         # ... existing code ...
