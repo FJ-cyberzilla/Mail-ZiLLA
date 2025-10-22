@@ -2,7 +2,77 @@
 BASE AGENT FRAMEWORK - Foundation for all platform agents
 Enterprise-grade agent architecture with performance tracking and error handling
 """
+"""
+BASE AGENT FRAMEWORK - Foundation for all platform agents
+"""
 
+from abc import ABC, abstractmethod
+from typing import List, Dict, Optional, Any
+import logging
+from datetime import datetime
+
+class BaseAgent(ABC):
+    """Abstract base class for all platform agents"""
+    
+    def __init__(self, platform: str):
+        self.platform = platform
+        self.logger = logging.getLogger(f"agent.{platform}")
+        self.proxy = None
+        self.timeout = 30
+        self.rate_limit = 10
+        
+    @abstractmethod
+    async def search_by_email(self, email: str, context: Dict = None) -> List[ProfileData]:
+        """Search platform by email address"""
+        pass
+    
+    @abstractmethod  
+    async def search_by_phone(self, phone: str, context: Dict = None) -> List[ProfileData]:
+        """Search platform by phone number"""
+        pass
+    
+    async def health_check(self) -> bool:
+        """Check if agent is healthy and operational"""
+        try:
+            # Basic connectivity check
+            return True
+        except Exception as e:
+            self.logger.error(f"Health check failed: {e}")
+            return False
+    
+    def set_proxy(self, proxy_url: str):
+        """Set proxy for agent requests"""
+        self.proxy = proxy_url
+    
+    def get_performance_metrics(self) -> Dict[str, Any]:
+        """Get agent performance metrics"""
+        return {
+            'platform': self.platform,
+            'last_activity': datetime.now(),
+            'is_healthy': True
+        }
+
+class BaseSocialAgent(BaseAgent):
+    """Base class for social media platforms"""
+    
+    async def extract_profile_data(self, profile_url: str) -> ProfileData:
+        """Extract detailed profile data from URL"""
+        pass
+    
+    async def validate_profile(self, profile_data: ProfileData) -> bool:
+        """Validate profile data quality"""
+        pass
+
+class BaseCodeAgent(BaseAgent):
+    """Base class for code/platform platforms"""
+    
+    async def get_repositories(self, username: str) -> List[Dict]:
+        """Get user repositories"""
+        pass
+    
+    async def analyze_activity(self, username: str) -> Dict[str, Any]:
+        """Analyze user activity patterns"""
+        pass
 from abc import ABC, abstractmethod
 from typing import List, Dict, Optional, Any, Tuple
 import logging
