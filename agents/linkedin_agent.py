@@ -12,6 +12,7 @@ import logging
 from core.base_agent import BaseSocialAgent
 from core.schemas import ProfileData, PlatformType
 
+
 class LinkedInAgent(BaseSocialAgent):
     """
     LinkedIn Intelligence Agent
@@ -221,7 +222,7 @@ class LinkedInAgent(BaseSocialAgent):
         
         return profiles
     
-    def _extract_profile_from_element(self, element: Dict, original_email: str) -> Optional[ProfileData]:
+    async def _extract_profile_from_element(self, element: Dict, original_email: str) -> Optional[ProfileData]:
         """Extract profile data from LinkedIn API element"""
         try:
             profile_info = element.get('profile', {})
@@ -262,6 +263,24 @@ class LinkedInAgent(BaseSocialAgent):
         except Exception as e:
             self.logger.debug(f"Failed to extract profile from element: {e}")
             return None
+    
+    def _extract_profile_from_search_item(self, item: Dict, original_email: str) -> Optional[ProfileData]:
+        """Extract profile from search item - placeholder method"""
+        # This method is called but not implemented in your original code
+        # Add implementation or return None
+        return None
+    
+    def _extract_profile_from_navigator(self, profile_data: Dict, original_email: str) -> Optional[ProfileData]:
+        """Extract profile from Sales Navigator - placeholder method"""
+        # This method is called but not implemented in your original code
+        # Add implementation or return None
+        return None
+    
+    def _parse_linkedin_search_results(self, response: str, phone: str) -> List[ProfileData]:
+        """Parse LinkedIn search results - placeholder method"""
+        # This method is called but not implemented in your original code
+        # Add implementation or return empty list
+        return []
     
     def _extract_company_info(self, profile_info: Dict) -> Dict[str, str]:
         """Extract company and job title information"""
@@ -308,7 +327,7 @@ class LinkedInAgent(BaseSocialAgent):
         """Extract bio/summary from profile"""
         try:
             return profile_info.get('summary', '')
-        except:
+        except Exception:
             return ''
     
     def _calculate_linkedin_confidence(self, profile_info: Dict, original_email: str) -> float:
@@ -420,23 +439,24 @@ class LinkedInAgent(BaseSocialAgent):
             self.logger.error(f"Failed to parse detailed LinkedIn profile: {e}")
             raise
     
-    def _extract_current_company(self, profile_info: Dict) -> str:
+    def _extract_current_company(self, profile_info: Dict) -> Optional[str]:
         """Extract current company from profile"""
         try:
             positions = profile_info.get('positions', {}).get('values', [])
             current_position = next((p for p in positions if p.get('isCurrent', False)), None)
             return current_position.get('company', {}).get('name') if current_position else None
-        except:
+        except Exception:
             return None
     
-    def _extract_current_title(self, profile_info: Dict) -> str:
+    def _extract_current_title(self, profile_info: Dict) -> Optional[str]:
         """Extract current job title from profile"""
         try:
             positions = profile_info.get('positions', {}).get('values', [])
             current_position = next((p for p in positions if p.get('isCurrent', False)), None)
             return current_position.get('title') if current_position else None
-        except:
+        except Exception:
             return None
+
 
 # Agent instance for easy import
 linkedin_agent = LinkedInAgent()
