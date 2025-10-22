@@ -1,0 +1,23 @@
+# Updated docker-compose.yml with resource management
+
+services:
+  worker:
+    build: .
+    command: celery -A tasks.worker_tasks worker --loglevel=info --concurrency=4
+    environment:
+      - RESOURCE_STRATEGY=adaptive
+      - MAX_MEMORY_USAGE=80
+      - NETWORK_MONITORING=true
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '2.0'
+        reservations:
+          memory: 1G
+          cpus: '1.0'
+    healthcheck:
+      test: ["CMD", "python", "-c", "from core.resource_orchestrator import resource_orchestrator; import asyncio; asyncio.run(resource_orchestrator.assess_system_resources())"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
