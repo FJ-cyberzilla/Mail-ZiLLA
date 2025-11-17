@@ -261,7 +261,7 @@ async def get_task_status(
             )
 
     except Exception as e:
-        sanitized_task_id = task_id.replace('\n', '').replace('\r', '')
+        sanitized_task_id = task_id.replace("\n", "").replace("\r", "")
         logger.error(f"Failed to get task status {sanitized_task_id}: {e}")
         raise HTTPException(status_code=500, detail="Failed to retrieve task status")
 
@@ -491,7 +491,7 @@ async def cancel_task(
             }
 
     except Exception as e:
-        safe_task_id = task_id.replace('\r', '').replace('\n', '')
+        safe_task_id = task_id.replace("\r", "").replace("\n", "")
         logger.error(f"Failed to cancel task {safe_task_id}: {e}")
         raise HTTPException(status_code=500, detail="Failed to cancel task")
 
