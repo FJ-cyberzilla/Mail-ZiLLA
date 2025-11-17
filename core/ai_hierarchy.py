@@ -512,12 +512,12 @@ class AIHierarchyManager:
 
     async def initialize_default_agents(self):
     """Initialize the core platform agents"""
-    from agents.linkedin_agent import LinkedInAgent
-    from agents.github_agent import GitHubAgent
-    from agents.twitter_agent import TwitterAgent
     from agents.facebook_agent import FacebookAgent
+    from agents.github_agent import GitHubAgent
     from agents.instagram_agent import InstagramAgent
-    
+    from agents.linkedin_agent import LinkedInAgent
+    from agents.twitter_agent import TwitterAgent
+
     # Register core agents
     self.register_agent(
         agent_id="linkedin_enterprise",
