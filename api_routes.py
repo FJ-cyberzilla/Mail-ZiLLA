@@ -490,7 +490,7 @@ async def cancel_task(
             }
 
     except Exception as e:
-        safe_task_id = task_id.replace('\r', '').replace('\n', '')
+        safe_task_id = task_id.replace("\r", "").replace("\n", "")
         logger.error(f"Failed to cancel task {safe_task_id}: {e}")
         raise HTTPException(status_code=500, detail="Failed to cancel task")
 
