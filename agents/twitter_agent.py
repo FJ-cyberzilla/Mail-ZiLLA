@@ -279,7 +279,7 @@ class TwitterAgent(BaseSocialAgent):
                     confidence_factors.append(0.7)
                 elif account_age > 180:
                     confidence_factors.append(0.5)
-            except:
+            except Exception:
                 pass
 
         return (
