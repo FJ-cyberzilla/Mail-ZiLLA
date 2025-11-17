@@ -273,7 +273,7 @@ class EmailValidator:
                         None, lambda: self.dns_resolver.resolve(domain, "A")
                     )
                     mx_hosts = [str(r) for r in a_records]
-                except:
+                except Exception:
                     result["details"]["error"] = "No MX or A records found"
                     return result
 
