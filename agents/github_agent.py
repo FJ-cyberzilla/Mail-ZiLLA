@@ -184,14 +184,8 @@ class GitHubAgent(BaseCodeAgent):
         """Search through organization memberships"""
         profiles = []
 
-        try:
-            # This would require additional context about organizations
-            # For now, return empty - could be enhanced with organization context
-            pass
-
-        except Exception as e:
-            self.logger.debug(f"GitHub organization search failed: {e}")
-
+        # This would require additional context about organizations
+        # For now, return empty - could be enhanced with organization context
         return profiles
 
     async def _get_user_profile(self, username: str) -> Optional[ProfileData]:
