@@ -14,7 +14,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from .activity_scorer import ActivityScorer
 from .config import get_settings
-from .exceptions import (AgentError, ProxyError, RateLimitExceeded,
+from .exceptions import (ProxyError, RateLimitExceeded,
                          SecurityViolation, ValidationError)
 from .feedback_engine import FeedbackEngine
 from .fuzzy_matcher import FuzzyMatcher
