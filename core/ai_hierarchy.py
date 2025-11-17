@@ -504,8 +504,13 @@ class AIHierarchyManager:
         if agent_id not in self.agent_metrics:
             self.agent_metrics[agent_id] = {
                 'success_count': 0,
-                'tota
-async def initialize_default_agents(self):
+                'total_time': 0.0,
+                'failure_count': 0,
+                'last_execution': None
+            }
+        # ... (rest of method implementation would follow here)
+
+    async def initialize_default_agents(self):
     """Initialize the core platform agents"""
     from agents.linkedin_agent import LinkedInAgent
     from agents.github_agent import GitHubAgent
