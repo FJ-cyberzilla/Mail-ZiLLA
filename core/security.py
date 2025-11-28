@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import List, Optional
 
 import jwt
+from passlib.context import CryptContext
 
 from .config import get_settings
 from .exceptions import SecurityViolation
@@ -37,6 +38,7 @@ class Authentication:
     def __init__(self):
         self.settings = get_settings()
         self.users_db = "data/users.db"
+        self.pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
         self._init_users_db()
 
     def _init_users_db(self):
@@ -70,34 +72,18 @@ class Authentication:
         """
         )
 
-        # Create default admin user if not exists
-        cursor.execute("SELECT COUNT(*) FROM users WHERE username = ?", ("admin",))
-        if cursor.fetchone()[0] == 0:
-            default_password = self._hash_password("Cyberzilla123!")
-            cursor.execute(
-                "INSERT INTO users (username, password_hash, full_name, email, role) VALUES (?, ?, ?, ?, ?)",
-                (
-                    "admin",
-                    default_password,
-                    "System Administrator",
-                    "cyberzilla.systems@gmail.com",
-                    "admin",
-                ),
-            )
+
 
         conn.commit()
         conn.close()
 
     def _hash_password(self, password: str) -> str:
         """Secure password hashing"""
-        salt = hashlib.sha256(self.settings.security.SECRET_KEY.encode()).hexdigest()
-        return hashlib.pbkdf2_hmac(
-            "sha256", password.encode("utf-8"), salt.encode("utf-8"), 100000
-        ).hex()
+        return self.pwd_context.hash(password)
 
     def verify_password(self, plain_password: str, hashed_password: str) -> bool:
         """Verify password against hash"""
-        return hmac.compare_digest(self._hash_password(plain_password), hashed_password)
+        return self.pwd_context.verify(plain_password, hashed_password)
 
     def authenticate(self, username: str, password: str) -> Optional[str]:
         """Authenticate user and return JWT token"""

@@ -91,13 +91,28 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
+from prometheus_client import generate_latest
 
 from core.ai_hierarchy import AIHierarchyManager
 from core.resource_orchestrator import resource_orchestrator
 from database.db import db_manager
 from security.rate_limiter import RateLimiter
+from monitoring.health_checks import HealthMonitor
+from monitoring.metrics import TASKS_PROCESSED, TASK_DURATION
+from core.exceptions import (
+    CyberzillaException,
+    SecurityViolation,
+    AuthenticationError,
+    ConfigurationError,
+    ValidationError,
+    AgentError,
+    ProxyError,
+    RateLimitExceeded,
+    DatabaseError,
+    NetworkError,
+)
 
 from .routes import router as api_router
 
@@ -114,6 +129,7 @@ logger = logging.getLogger("cyberzilla_api")
 settings = get_settings()
 rate_limiter = RateLimiter()
 ai_hierarchy = AIHierarchyManager()
+health_monitor = HealthMonitor()
 
 
 @asynccontextmanager
@@ -331,6 +347,10 @@ async def log_requests(request: Request, call_next):
         f"IP: {client_ip}"
     )
 
+    # Prometheus metrics
+    TASKS_PROCESSED.inc()
+    TASK_DURATION.observe(process_time / 1000)  # Convert ms to seconds
+
     return response
 
 
@@ -341,57 +361,21 @@ app.include_router(api_router, prefix="/api/v1")
 app.mount("/static", StaticFiles(directory="api/static"), name="static")
 
 
+@app.get("/metrics", tags=["Monitoring"])
+async def metrics():
+    """
+    Expose Prometheus metrics
+    """
+    return Response(generate_latest(), media_type="text/plain")
+
+
 # Health check endpoint
 @app.get("/health", tags=["System"])
 async def health_check():
     """
     Comprehensive system health check
     """
-    health_data = {
-        "status": "healthy",
-        "version": "2.1.0",
-        "timestamp": datetime.now().isoformat(),
-        "components": {},
-        "uptime": None,
-    }
-
-    try:
-        # Database health
-        db_health = db_manager.health_check()
-        health_data["components"]["database"] = "healthy" if db_health else "unhealthy"
-
-        # System resources
-        resources = await resource_orchestrator.assess_system_resources()
-        health_data["components"]["resources"] = {
-            "memory_usage": f"{resources.memory_usage:.1f}%",
-            "cpu_usage": f"{resources.cpu_usage:.1f}%",
-            "network_speed": f"{resources.network_speed:.1f} Mbps",
-        }
-
-        # AI agents health
-        agent_report = ai_hierarchy.get_agent_performance_report()
-        health_data["components"]["ai_agents"] = {
-            "total_agents": agent_report["summary"]["total_agents"],
-            "healthy_agents": agent_report["summary"]["by_status"].get("healthy", 0),
-        }
-
-        # Enterprise trust
-        trust_indicators = trust_manager.get_trust_indicators()
-        health_data["components"]["enterprise_trust"] = {
-            "trust_score": trust_indicators["trust_score"],
-            "system_registration": trust_indicators["system_registration"],
-        }
-
-        # Overall status
-        if not db_health or agent_report["summary"]["by_status"].get("failing", 0) > 0:
-            health_data["status"] = "degraded"
-
-    except Exception as e:
-        health_data["status"] = "unhealthy"
-        health_data["error"] = str(e)
-        logger.error(f"Health check failed: {e}")
-
-    return health_data
+    return await health_monitor.run_all_checks()
 
 
 @app.get("/", tags=["System"])
@@ -452,6 +436,42 @@ async def internal_error_handler(request: Request, exc: HTTPException):
             "support": "support@cyberzilla.systems",
             "error_id": str(hash(str(exc))),  # For support tracking
         },
+    )
+
+
+@app.exception_handler(SecurityViolation)
+async def security_violation_handler(request: Request, exc: SecurityViolation):
+    logger.warning(f"Security violation: {exc.detail if hasattr(exc, 'detail') else exc}")
+    return JSONResponse(
+        status_code=status.HTTP_403_FORBIDDEN,
+        content={"detail": "Forbidden: Security Violation", "message": str(exc)},
+    )
+
+
+@app.exception_handler(AuthenticationError)
+async def authentication_error_handler(request: Request, exc: AuthenticationError):
+    logger.warning(f"Authentication error: {exc.detail if hasattr(exc, 'detail') else exc}")
+    return JSONResponse(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        content={"detail": "Unauthorized", "message": str(exc)},
+    )
+
+
+@app.exception_handler(RateLimitExceeded)
+async def rate_limit_exceeded_handler(request: Request, exc: RateLimitExceeded):
+    logger.warning(f"Rate limit exceeded: {exc.detail if hasattr(exc, 'detail') else exc}")
+    return JSONResponse(
+        status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+        content={"detail": "Rate limit exceeded", "message": str(exc)},
+    )
+
+
+@app.exception_handler(CyberzillaException)
+async def cyberzilla_exception_handler(request: Request, exc: CyberzillaException):
+    logger.error(f"Cyberzilla application error: {exc.detail if hasattr(exc, 'detail') else exc}", exc_info=True)
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={"detail": "An internal application error occurred", "message": str(exc)},
     )
 
 

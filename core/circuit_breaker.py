@@ -1,4 +1,11 @@
 # core/circuit_breaker.py
+import time
+
+class CircuitBreakerOpenException(Exception):
+    """Exception raised when attempting to execute a function while the circuit breaker is OPEN."""
+    pass
+
+
 class CircuitBreaker:
     def __init__(self, failure_threshold: int = 5, recovery_timeout: int = 60):
         self.failure_threshold = failure_threshold
